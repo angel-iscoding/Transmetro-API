@@ -13,4 +13,4 @@ Backend system for real-time bus tracking developed with **NestJS** and **Hexago
 ##  Project Status
 **Under Development** - DEMO version for integrative project presentation
 
-*Complementary Frontend: [bus-tracker-mobile](https://github.com/angel-iscoding/Transmetro-API)*
+*Complementary Frontend: [Transmetro-Platform](https://github.com/angel-iscoding/Transmetro-Aplication)*
