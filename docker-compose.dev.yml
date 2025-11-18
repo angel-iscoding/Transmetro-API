@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # API NestJS in development mode
+  api:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      target: builder
+    container_name: transmetro-api-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/transmetro_dev
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=transmetro_dev
+      - POSTGRES_USER=transmetro_user
+      - POSTGRES_PASSWORD=transmetro_password
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+    depends_on:
+      - mongo
+      - postgres
+    networks:
+      - transmetro-network
+    volumes:
+      - ./app/src:/app/src
+      - ./app/package.json:/app/package.json
+    restart: unless-stopped
+    command: npm run start:dev
+
+  # MongoDB for development
+  mongo:
+    image: mongo:7.0
+    container_name: transmetro-mongo-dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_dev_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=transmetro_dev
+    networks:
+      - transmetro-network
+
+  # PostgreSQL for development
+  postgres:
+    image: postgres:16-alpine
+    container_name: transmetro-postgres-dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=transmetro_dev
+      - POSTGRES_USER=transmetro_user
+      - POSTGRES_PASSWORD=transmetro_password
+    networks:
+      - transmetro-network
+
+volumes:
+  mongo_dev_data:
+  postgres_dev_data:
+
+networks:
+  transmetro-network:
+    driver: bridge

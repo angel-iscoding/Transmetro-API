@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # API NestJS
+  api:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: transmetro-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Environment variables for MongoDB
+      - MONGODB_URI=mongodb://mongo:27017/transmetro
+      # Environment variables for PostgreSQL
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=transmetro
+      - POSTGRES_USER=transmetro_user
+      - POSTGRES_PASSWORD=transmetro_password
+      # Environment variables for Google Maps (you need to add your API key)
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+    depends_on:
+      - mongo
+      - postgres
+    networks:
+      - transmetro-network
+    restart: unless-stopped
+
+  # MongoDB for geospatial data
+  mongo:
+    image: mongo:7.0
+    container_name: transmetro-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
+    environment:
+      - MONGO_INITDB_DATABASE=transmetro
+    networks:
+      - transmetro-network
+    restart: unless-stopped
+
+  # PostgreSQL for transactional data
+  postgres:
+    image: postgres:16-alpine
+    container_name: transmetro-postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_DB=transmetro
+      - POSTGRES_USER=transmetro_user
+      - POSTGRES_PASSWORD=transmetro_password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    networks:
+      - transmetro-network
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+    driver: local
+  postgres_data:
+    driver: local
+networks:
+  transmetro-network:
+    driver: bridge
