@@ -67,22 +67,58 @@ Install dependencies:
 ```
 npm install
 ```
-Mode development
+Development mode
 ```
 npm run start:dev
 ```
-Build y execution (Production):
+Build and run (Production):
 ```
 npm run build
 npm run start:prod
 ```
 
-**Contribution and development notes**
+**Centralized Configuration**
+- **Description**: Configuration has been centralized under `src/config` and validated with `zod` and `@nestjs/config`. This normalizes environment variables and exposes a typed `AppConfig` consumable by the application.
+- **Key files**: `src/config/env.schema.ts`, `src/config/types.ts`, `src/config/transform.ts`, `src/config/configuration.ts`, `src/config/index.ts`, `src/config/config.module.ts`.
+- **Support files**: added `.env.example`, `.env.docker`, `docker-compose.yml` and `docs/CONFIGURATION.md` with examples and recommended practices.
+- **Flow**: `ConfigModule.forRoot({ validate: validateEnv })` validates `process.env` (or `.env` files), `validateEnv` transforms into `AppConfig`, and `APP_CONFIG` is injected where needed via `getAppConfig`.
 
-- Business logic must be implemented in `src/domain` y `src/application`.
-- Drivers and persistence adapters must be kept in `src/infrastructure`.
-- To add a new source/persistence, create an adapter that implements the ports defined in `src/application/ports`.
 
+Example `.env` (example values):
+
+```dotenv
+# App
+NODE_ENV=development
+PORT=3000
+LOG_LEVEL=info
+CORS_ORIGINS=http://localhost:3000
+
+
+# PostgreSQL: either provide POSTGRES_URI or the parts below
+# Example POSTGRES_URI: postgresql://user:password@host:5432/dbname
+POSTGRES_URI=uri
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=postgresdb
+
+# MongoDB: either provide MONGO_URI or the parts below
+# Example MONGO_URI: mongodb://user:password@host:27017/dbname
+MONGO_URI=uri
+MONGO_HOST=localhost
+MONGO_PORT=27017
+MONGO_USER=mongodb
+MONGO_PASSWORD=your_password
+MONGO_DB=mongodb
+
+# JWT
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=1h
+
+# External services
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+```
 
 ##  Project Status
 **Under Development** - DEMO version for integrative project presentation
