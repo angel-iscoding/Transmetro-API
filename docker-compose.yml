@@ -1,0 +1,66 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: transmetro_app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=transmetro_db
+      - POSTGRES_USER=transmetro_user
+      - POSTGRES_PASSWORD=transmetro_password
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_DB=transmetro_mongo
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - mongodb
+    restart: unless-stopped
+    networks:
+      - transmetro_network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: transmetro_postgres
+    environment:
+      - POSTGRES_DB=transmetro_db
+      - POSTGRES_USER=transmetro_user
+      - POSTGRES_PASSWORD=transmetro_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - transmetro_network
+
+  mongodb:
+    image: mongo:latest
+    container_name: transmetro_mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=transmetro_user
+      - MONGO_INITDB_ROOT_PASSWORD=transmetro_password
+      - MONGO_INITDB_DATABASE=transmetro_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    networks:
+      - transmetro_network
+
+volumes:
+  postgres_data:
+  mongodb_data:
+
+networks:
+  transmetro_network:
+    driver: bridge
