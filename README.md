@@ -93,8 +93,6 @@ Install Docker and Docker Compose:
 ```bash
 git clone <repository-url>
 cd app_transmetro/app
-cp .env.example .env
-# Edit .env with your Google Maps API key
 ```
 
 2. **Start all services:**
@@ -118,27 +116,6 @@ docker compose down
 - **postgres**: PostgreSQL 15 for transactional data
 - **mongodb**: MongoDB 7 for geospatial data
 
-### Environment Variables
-
-Copy `.env.example` to `.env` and configure:
-
-```bash
-# Required
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
-
-# Database settings (pre-configured for Docker)
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=transmetro_db
-POSTGRES_USER=transmetro_user
-POSTGRES_PASSWORD=transmetro_password
-
-MONGODB_HOST=mongodb
-MONGODB_PORT=27017
-MONGODB_DB=transmetro_mongo
-MONGODB_USER=transmetro_user
-MONGODB_PASSWORD=transmetro_password
-```
 
 ### Development Workflow
 
