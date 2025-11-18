@@ -9,7 +9,6 @@
 import { Module } from '@nestjs/common';
 // Infrastructure Layer (Primary and Secondary Adapters)
 import { BusController } from './infrastructure/controllers/bus-controller';
-import { BusRepositoryImpl } from './infrastructure/persistence/bus-repository-impl';
 // Application Layer (Use Cases)
 import { BusService } from './application/use-cases/bus-service';
 
@@ -23,14 +22,6 @@ import { BusService } from './application/use-cases/bus-service';
   providers: [
     // BusService acts as a use case, orchestrating application logic
     BusService,
-
-    // Dependency injection for the repository:
-    // - 'BusRepository' is the port (interface) defined in the domain
-    // - BusRepositoryImpl is the secondary (driving) adapter that implements that port
-    {
-      provide: 'BusRepository',
-      useClass: BusRepositoryImpl,
-    }
   ],
 })
 export class AppModule { }
