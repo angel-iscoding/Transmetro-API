@@ -67,95 +67,58 @@ Install dependencies:
 ```
 npm install
 ```
-Mode development
+Development mode
 ```
 npm run start:dev
 ```
-Build y execution (Production):
+Build and run (Production):
 ```
 npm run build
 npm run start:prod
 ```
 
-## Docker Development Environment
+**Centralized Configuration**
+- **Description**: Configuration has been centralized under `src/config` and validated with `zod` and `@nestjs/config`. This normalizes environment variables and exposes a typed `AppConfig` consumable by the application.
+- **Key files**: `src/config/env.schema.ts`, `src/config/types.ts`, `src/config/transform.ts`, `src/config/configuration.ts`, `src/config/index.ts`, `src/config/config.module.ts`.
+- **Support files**: added `.env.example`, `.env.docker`, `docker-compose.yml` and `docs/CONFIGURATION.md` with examples and recommended practices.
+- **Flow**: `ConfigModule.forRoot({ validate: validateEnv })` validates `process.env` (or `.env` files), `validateEnv` transforms into `AppConfig`, and `APP_CONFIG` is injected where needed via `getAppConfig`.
 
-This project includes full Docker support with PostgreSQL and MongoDB databases.
 
-### Prerequisites
+Example `.env` (example values):
 
-Install Docker and Docker Compose:
-- **Docker Desktop** (Mac/Windows): https://www.docker.com/products/docker-desktop
-- **Docker Engine** (Linux): https://docs.docker.com/engine/install/
+```dotenv
+# App
+NODE_ENV=development
+PORT=3000
+LOG_LEVEL=info
+CORS_ORIGINS=http://localhost:3000
 
-### Quick Start
 
-1. **Clone and setup environment:**
-```bash
-git clone <repository-url>
-cd app_transmetro/app
+# PostgreSQL: either provide POSTGRES_URI or the parts below
+# Example POSTGRES_URI: postgresql://user:password@host:5432/dbname
+POSTGRES_URI=uri
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=postgresdb
+
+# MongoDB: either provide MONGO_URI or the parts below
+# Example MONGO_URI: mongodb://user:password@host:27017/dbname
+MONGO_URI=uri
+MONGO_HOST=localhost
+MONGO_PORT=27017
+MONGO_USER=mongodb
+MONGO_PASSWORD=your_password
+MONGO_DB=mongodb
+
+# JWT
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=1h
+
+# External services
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ```
-
-2. **Start all services:**
-```bash
-docker compose up --build
-```
-
-This will start:
-- **NestJS API** on http://localhost:3000
-- **PostgreSQL** on localhost:5432
-- **MongoDB** on localhost:27017
-
-3. **Stop services:**
-```bash
-docker compose down
-```
-
-### Docker Services
-
-- **app**: NestJS application with hot-reload enabled
-- **postgres**: PostgreSQL 15 for transactional data
-- **mongodb**: MongoDB 7 for geospatial data
-
-
-### Development Workflow
-
-1. **Start environment:**
-```bash
-docker compose up
-```
-
-2. **View logs:**
-```bash
-docker compose logs -f app
-```
-
-3. **Access databases:**
-```bash
-# PostgreSQL
-docker exec -it transmetro_postgres psql -U transmetro_user -d transmetro_db
-
-# MongoDB
-docker exec -it transmetro_mongodb mongosh -u transmetro_user -p transmetro_password
-```
-
-4. **Rebuild after changes:**
-```bash
-docker compose up --build
-```
-
-### Production Deployment
-
-For production deployment:
-```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
-```
-
-**Contribution and development notes**
-
-- Business logic must be implemented in `src/domain` y `src/application`.
-- Drivers and persistence adapters must be kept in `src/infrastructure`.
-- To add a new source/persistence, create an adapter that implements the ports defined in `src/application/ports`.
-
 
 ##  Project Status
 **Under Development** - DEMO version for integrative project presentation
